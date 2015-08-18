@@ -17,11 +17,12 @@
     <script src="./dist/synchronizer.js"></script>
 
     <script src="./test/fixture.js"></script>
+    <script src="./test/sync-engine.js"></script>
 
     <script>
-      //if (!window.getSyncEngine) {
-      //  alert('Did you run `sh build.sh` first?');
-      //}
+      if (!window.SyncEngine) {
+        alert('Did you run `sh build.sh` first?');
+      }
       mocha.checkLeaks();
       //mocha.globals(['jQuery']);
       mocha.run();
