@@ -5,10 +5,37 @@
     <title>Synchronizer</title>
   </head>
   <body>
-    <script src="./dist/synchronizer.js"></script>
-    <script src="./src/adapters/history.js"></script>
-    <script src="./test/fixture.js"></script>
-    <input type="submit" value="Sync now" onclick="Synchronizer.syncCycle();">
+    <input type="submit" value="Connect" id="connect">
+    <input type="submit" value="Sync now" id="sync-now">
   </body>
+  <script src="./vendor/kinto.dev.js"></script>
+  <script src="./vendor/fxsync-webcrypto.js"></script>
+  <script src="./src/sync-engine.js"></script>
+  <script src="./src/adapters/history.js"></script>
+  <script src="./test/fixture.js"></script>
+  <script>
+    var syncEngine = new SyncEngine(window.fxSyncDataExample.synctoCredentials);
+    
+    document.querySelector('#sync-now').disabled = true;
+    
+    document.querySelector('#connect').onclick = function() {
+      console.log('Connecting...');
+      syncEngine.connect().then(() => {
+        syncEngine.registerAdapter('history', window.HistoryAdapter);
+        document.querySelector('#sync-now').disabled = false;
+        console.log('Connected!');
+      }, function(err) {
+        window.alert(err);
+      });
+    };
+    
+    document.querySelector('#sync-now').onclick = function() {
+      document.querySelector('#sync-now').disabled = true;
+      console.log('Sync start');
+      syncEngine.syncNow().then(() => {
+        document.querySelector('#sync-now').disabled = false;
+        console.log('Sync end');
+      });
+    };
+  </script>
 </html>
-
