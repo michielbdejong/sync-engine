@@ -4,22 +4,34 @@
 
 indexedDB.deleteDatabase('syncto/history');
 
+describe('test server on localhost:8000', function() {
+  it('is running', function(done) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', 'http://localhost:8000/running', true);
+    xhr.onload = function() {
+      chai.expect(xhr.response).to.equal('yes');
+      done();
+    };
+    xhr.send();
+  });
+});
+
 describe('SyncEngine', function() {
   describe('constructor', function() {
     it('constructs a SyncEngine object', function(done) {
-      var se = new SyncEngine(window.fxSyncDataExample.synctoCredentials, ['history'], window.fxSyncDataExample.kB);
+      var se = new SyncEngine(window.fxSyncDataExample.synctoCredentials);
       chai.expect(se).to.be.an('object');
       chai.expect(se._fswc).to.be.an('object');
       chai.expect(se._kinto).to.be.an('object');
       chai.expect(se._collections).to.be.an('object');
-      chai.expect(se._encryptedCollectionNames).to.be.instanceOf(Array);
+      chai.expect(se._adapters).to.be.an('object');
       done();
     });
   });
   describe('connect', function() {
     it('obtains the bulk key bundle', function(done) {
       this.timeout(5000);
-      var se = new SyncEngine(window.fxSyncDataExample.synctoCredentials, ['history'], window.fxSyncDataExample.kB);
+      var se = new SyncEngine(window.fxSyncDataExample.synctoCredentials);
       chai.expect(se.connect()).to.eventually.equal(undefined).
              and.notify(done);
     });
@@ -27,7 +39,7 @@ describe('SyncEngine', function() {
   describe('syncNow', function() {
     it('syncs the encrypted collections', function(done) {
       this.timeout(10000);
-      var se = new SyncEngine(window.fxSyncDataExample.synctoCredentials, ['history'], window.fxSyncDataExample.kB);
+      var se = new SyncEngine(window.fxSyncDataExample.synctoCredentials);
       se.connect().then(() => {
         return se.syncNow();
       }).then(() => {

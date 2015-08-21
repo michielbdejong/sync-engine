@@ -57,9 +57,8 @@ var SyncEngine = (function() {
           'X-Client-State': kintoCredentials.xClientState
         }
       });
-console.log('initing kinto', this);
-      this._collections['meta'] = this._kinto.collection('meta');
-      this._collections['crypto'] = this._kinto.collection('crypto');
+      this._collections.meta = this._kinto.collection('meta');
+      this._collections.crypto = this._kinto.collection('crypto');
     },
 
 
@@ -69,11 +68,18 @@ console.log('initing kinto', this);
 
     _getItemByIndex: function(collectionName, itemIndex) {
       return this._collections[collectionName].list().then(collRecords => {
-        return {
-          data: {
-            payload: collRecords.data[itemIndex].payload
-          }
-        };
+        if (typeof collRecords === 'object' &&
+            typeof collRecords.data === 'object' &&
+            typeof collRecords.data[itemIndex] === 'object' &&
+            typeof collRecords.data[itemIndex].payload !== 'undefined') {
+          return {
+            data: {
+              payload: collRecords.data[itemIndex].payload
+            }
+          };
+        } else {
+          return null;
+        }
       });
     },
 
@@ -149,7 +155,6 @@ console.log('initing kinto', this);
         promises.push(this._collections[collectionName].sync());
       }
       return Promise.all(promises).then((results) => {
-        console.log('sync results', results);
         for(collectionName in this._adapters) {
           this._adapters[collectionName].update(this._collections[collectionName]);
         }
