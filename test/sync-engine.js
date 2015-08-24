@@ -35,6 +35,16 @@ describe('SyncEngine', function() {
       chai.expect(se.connect()).to.eventually.equal(undefined).
              and.notify(done);
     });
+    it('rejects its promise if syncto server not responding');
+    it('rejects its promise if BrowserID assertion is wrong');
+    it('rejects its promise if X-Client-State is wrong');
+    it('rejects its promise if kB is wrong');
+    it('rejects its promise if global/meta response status not a 200');
+    it('rejects its promise if global/meta response body not JSON');
+    it('rejects its promise if storageVersion wrong');
+    it('rejects its promise if crypto/keys response status not a 200');
+    it('rejects its promise if crypto/keys response body not JSON');
+    it('rejects its promise if cryptoKeys not verified/not decrypted with kB');
   });
   describe('syncNow', function() {
     it('syncs the encrypted collections', function(done) {
@@ -56,5 +66,8 @@ describe('SyncEngine', function() {
         done();
       });
     });
+    it('rejects its promise if any response status not a 200');
+    it('rejects its promise if any response body not JSON');
+    it('rejects its promise if any record not verifiable/decryptable with Bulk Key Bundle');
   });
 });
