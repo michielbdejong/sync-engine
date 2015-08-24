@@ -1,5 +1,5 @@
 jshint src/ test/
 mkdir -p dist/
-echo "(function(window) {" > dist/sync-engine.js
-cat vendor/kinto.dev.js vendor/fxsync-webcrypto.js src/sync-engine.js >> dist/sync-engine.js
-echo "})(window);" >> dist/sync-engine.js
+echo "(function(window) {" > dist/syncengine.js
+cat vendor/kinto.dev.js vendor/fxsyncwebcrypto.js src/syncengine.js >> dist/syncengine.js
+echo "})(window);" >> dist/syncengine.js
