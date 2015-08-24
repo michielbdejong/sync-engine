@@ -27,6 +27,10 @@ http.createServer(function(req, res) {
         commit: '1be8cf6',
         hello: 'syncto'
       });
+    } else if (req.headers.authorization !== 'BrowserID test-assertion-mock') {
+      response = 'Please add a request header: Authorization: "BrowserID test-assertion-mock"';
+    } else if (req.headers.authorization !== 'BrowserID test-assertion-mock') {
+      response = 'Please add a request header: X-Client-State: "test-xClientState-mock"';
     } else if (pathName === '/v1/buckets/syncto/collections/meta/records') {
       response = JSON.stringify({
         data: [
@@ -36,11 +40,13 @@ http.createServer(function(req, res) {
     } else if (pathName === '/v1/buckets/syncto/collections/crypto/records') {
       response = JSON.stringify({
         data: [
-          {
-            id: 'somestring',
-            last_modified: 1234567890123,
-            payload: JSON.stringify(global.fxSyncDataExample.cryptoKeys)
-          }
+          global.fxSyncDataExample.cryptoKeysResponse
+        ]
+      });
+    } else if (pathName === '/v1/buckets/syncto/collections/history/records') {
+      response = JSON.stringify({
+        data: [
+          global.fxSyncDataExample.historyEntryResponse
         ]
       });
     }

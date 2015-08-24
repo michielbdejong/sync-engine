@@ -19,7 +19,7 @@ describe('test server on localhost:8000', function() {
 describe('SyncEngine', function() {
   describe('constructor', function() {
     it('constructs a SyncEngine object', function(done) {
-      var se = new SyncEngine(window.fxSyncDataExample.synctoCredentials);
+      var se = new SyncEngine(window.fxSyncDataExample.testServerCredentials);
       chai.expect(se).to.be.an('object');
       chai.expect(se._fswc).to.be.an('object');
       chai.expect(se._kinto).to.be.an('object');
@@ -31,7 +31,7 @@ describe('SyncEngine', function() {
   describe('connect', function() {
     it('obtains the bulk key bundle', function(done) {
       this.timeout(5000);
-      var se = new SyncEngine(window.fxSyncDataExample.synctoCredentials);
+      var se = new SyncEngine(window.fxSyncDataExample.testServerCredentials);
       chai.expect(se.connect()).to.eventually.equal(undefined).
              and.notify(done);
     });
@@ -39,8 +39,9 @@ describe('SyncEngine', function() {
   describe('syncNow', function() {
     it('syncs the encrypted collections', function(done) {
       this.timeout(10000);
-      var se = new SyncEngine(window.fxSyncDataExample.synctoCredentials);
+      var se = new SyncEngine(window.fxSyncDataExample.testServerCredentials);
       se.connect().then(() => {
+        se.registerAdapter('history', HistoryAdapter);
         return se.syncNow();
       }).then(() => {
         chai.expect(se._collections.history).to.be.an('object');
@@ -52,7 +53,7 @@ describe('SyncEngine', function() {
         chai.expect(list.data[0]).to.be.an('object');
         chai.expect(list.data[0].payload).to.be.an('object');
         chai.expect(list.data[0].payload.histUri).to.be.a('string');
-        done(); 
+        done();
       });
     });
   });

@@ -5,30 +5,41 @@
     <title>Synchronizer</title>
   </head>
   <body>
-    <input type="submit" value="Connect" id="connect">
-    <input type="submit" value="Sync now" id="sync-now">
+    <ul>
+      <li>Set Syncto URL: <input id="url" value="http://localhost:8000/v1/"/></li>
+      <li>Paste BrowserID assertion: <input id="assertion" value="eyJhbGciOiJSUzI1NiJ9.eyJwdWJsaWMta2V5Ijp7ImFsZ29yaXRobSI6IkRTIiwieSI6IjkxNzI4RDMwQzNFQjY5OEM2Q0QyNTJFNzJGMzJBRUFGQzNENzgxN0RCRDFFMTJEM0ZCRDk1NkM2MEE3NUY2NEU5MkI5RTAxQUYyRjY3REEyNzJBOEJDODdFMzUzQUU0NjAxMDVGMkM4QjQ2NTFBNUZFMTk0MUU0NTk3NERBOTE0QUNDQTZCMDI0NzQxMjk2MUU4RDkwQzRCNkI0NDJFOUZEREI0MjRCQ0ZBRURBMjQ0MEVGOUU3NUE2RjY4MzQyOTdFRjYwNERFNzM2Mjk2OEVBNDc3QkYxMzQ0MjhCRDhEMkY5QTkzODMxNkEyRDAzM0FBOTM3MUQ3QjVDQUZCRjYiLCJwIjoiRkY2MDA0ODNEQjZBQkZDNUI0NUVBQjc4NTk0QjM1MzNENTUwRDlGMUJGMkE5OTJBN0E4REFBNkRDMzRGODA0NUFENEU2RTBDNDI5RDMzNEVFRUFBRUZEN0UyM0Q0ODEwQkUwMEU0Q0MxNDkyQ0JBMzI1QkE4MUZGMkQ1QTVCMzA1QThEMTdFQjNCRjRBMDZBMzQ5RDM5MkUwMEQzMjk3NDRBNTE3OTM4MDM0NEU4MkExOEM0NzkzMzQzOEY4OTFFMjJBRUVGODEyRDY5QzhGNzVFMzI2Q0I3MEVBMDAwQzNGNzc2REZEQkQ2MDQ2MzhDMkVGNzE3RkMyNkQwMkUxNyIsInEiOiJFMjFFMDRGOTExRDFFRDc5OTEwMDhFQ0FBQjNCRjc3NTk4NDMwOUMzIiwiZyI6IkM1MkE0QTBGRjNCN0U2MUZERjE4NjdDRTg0MTM4MzY5QTYxNTRGNEFGQTkyOTY2RTNDODI3RTI1Q0ZBNkNGNTA4QjkwRTVERTQxOUUxMzM3RTA3QTJFOUUyQTNDRDVERUE3MDREMTc1RjhFQkY2QUYzOTdENjlFMTEwQjk2QUZCMTdDN0EwMzI1OTMyOUU0ODI5QjBEMDNCQkM3ODk2QjE1QjRBREU1M0UxMzA4NThDQzM0RDk2MjY5QUE4OTA0MUY0MDkxMzZDNzI0MkEzODg5NUM5RDVCQ0NBRDRGMzg5QUYxRDdBNEJEMTM5OEJEMDcyREZGQTg5NjIzMzM5N0EifSwicHJpbmNpcGFsIjp7ImVtYWlsIjoiYWNlYmJiNmMxZDUxNDBhZmIxYzIwMjRiYzdjNjFiMzhAYXBpLmFjY291bnRzLmZpcmVmb3guY29tIn0sImlhdCI6MTQ0MDA4MTMyODY4MCwiZXhwIjoxNDQwMTAyOTM4NjgwLCJmeGEtZ2VuZXJhdGlvbiI6MTQzOTIxODI1MTI5OSwiZnhhLWxhc3RBdXRoQXQiOjE0NDAwODEyMTAsImZ4YS12ZXJpZmllZEVtYWlsIjoibWljaGllbCtlbXB0eXN5bmNAdW5ob3N0ZWQub3JnIiwiaXNzIjoiYXBpLmFjY291bnRzLmZpcmVmb3guY29tIn0.d1h2OFAjN2iTpvX0SRJLNO5eXvTO0B_VDrKhwCrtT0BLGp5-gP3JrkaDZx__kRvOzvI5tTmzTS9Mvn0SZLyCXSrbtbIeljD83TRcfGmVXc7Y1EAaVvR3F3pykIjjHxPHLgi-h-O06ZF0I2GHP5hC39EPgscQSmO2VofQV5uaNa1yJuAO-ucoKsr60EaJnkjG6ULRJEOwvf62cZHSlei3uOZciCQElnkop4km-xAYFYNTZCn495B28-7DP9oz-sIHfpLlxwDHYrtEqHQpTyR7AlEsbUE07_qxGw6kBA1loil0IifnIoxY32qEIeY4gNAkjbz1_mw8KiSkPR9FbbEJrw~eyJhbGciOiJEUzEyOCJ9.eyJleHAiOjIyMjg0ODEzMzg1MDIsImF1ZCI6Imh0dHBzOi8vdG9rZW4uc2VydmljZXMubW96aWxsYS5jb20vIn0=.PRQh9pSHrOeHRNvvE_NdsZmMsqI-836oJoiE8avPlmDC5RvKrxTrCw=="/></li>
+      <li>Paste X-Client-State: <input id="x-client-state" value="518fef27c6bbc0220aab0f00b1a37308"/></li>
+      <li>Paste kB: <input id="kb" value="85c4f8c1d8e3e2186824c127af786891dd03c6e05b1b45f28f7181211bf2affb" />
+      <li>Click <input type="submit" value="Connect" id="connect"></li>
+      <li>Click <input type="submit" value="Sync now" id="sync-now"></li>
+      <li>Check the console</li>
   </body>
   <script src="./vendor/kinto.dev.js"></script>
   <script src="./vendor/fxsync-webcrypto.js"></script>
   <script src="./src/sync-engine.js"></script>
-  <script src="./src/adapters/history.js"></script>
-  <script src="./test/fixture.js"></script>
+  <script src="./src/adapters/example.js"></script>
   <script>
-    var syncEngine = new SyncEngine(window.fxSyncDataExample.synctoCredentials);
-    
+    var syncEngine;
+
     document.querySelector('#sync-now').disabled = true;
-    
+
     document.querySelector('#connect').onclick = function() {
       console.log('Connecting...');
+      syncEngine = new SyncEngine({
+        URL: document.querySelector('#url').value,
+        assertion: document.querySelector('#assertion').value,
+        xClientState: document.querySelector('#x-client-state').value,
+        kB: document.querySelector('#kb').value
+      });
       syncEngine.connect().then(() => {
-        syncEngine.registerAdapter('history', window.HistoryAdapter);
+        syncEngine.registerAdapter('history', window.ExampleAdapter);
         document.querySelector('#sync-now').disabled = false;
         console.log('Connected!');
       }, function(err) {
         window.alert(err);
       });
     };
-    
+
     document.querySelector('#sync-now').onclick = function() {
       document.querySelector('#sync-now').disabled = true;
       console.log('Sync start');

@@ -248,7 +248,6 @@ window.FxSyncWebCrypto.prototype._importSyncKeys = function(cryptoKeysIVByteArra
  */
 window.FxSyncWebCrypto.prototype.setKeys = function(kB, cryptoKeys) {
   var kBByteArray, cryptoKeysCiphertextByteArray, cryptoKeysIVByteArray, cryptoKeysHmacByteArray;
-console.log('input checking', kB, cryptoKeys);
   // Input checking
   try {
     kBByteArray = StringConversion.hexStringToByteArray(kB);
@@ -324,6 +323,8 @@ window.FxSyncWebCrypto.prototype.decrypt = function(payload, collectionName) {
     if (!result) {
       return Promise.reject('Record verification failed with current hmac key for ' + collectionName);
     }
+  }, function(err) {
+    return Promise.reject('Record verification failed with current hmac key for ' + collectionName);
   }).then(function() {
     return crypto.subtle.decrypt({
       name: 'AES-CBC',

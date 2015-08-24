@@ -1,18 +1,21 @@
 var SyncEngine = (function() {
 
   function WebCryptoTransformer(setCollectionName, setFswc) {
+    if (!setFswc.bulkKeyBundle) {
+      throw new Error('Attempt to register Transformer with no bulk key bundle!');
+    }
     this.collectionName = setCollectionName;
     this.fswc = setFswc;
   }
   WebCryptoTransformer.prototype = Kinto.transformers.RemoteTransformer.prototype;
- 
+
   WebCryptoTransformer.prototype.encode = function(record) {
     return this.fswc.encrypt(record.payload, this.collectionName).then(payloadEnc => {
       record.payload = payloadEnc;
       return record;
     });
   };
- 
+
   WebCryptoTransformer.prototype.decode = function(record) {
     return this.fswc.decrypt(record.payload, this.collectionName).then(payloadDec => {
       record.payload = payloadDec;
@@ -86,10 +89,17 @@ var SyncEngine = (function() {
     _syncCollection: function(collectionName) {
       // Let synchronization strategy default to 'manual', see
       // http://kintojs.readthedocs.org/en/latest/api/#fetching-and-publishing-changes
-      this._collections[collectionName].sync();
+      return this._collections[collectionName].sync().then(syncResults => {
+        if (syncResults.ok) {
+          return Promise.resolve(syncResults);
+        } else {
+          return Promise.reject(syncResults);
+        }
+      });
     },
 
     _storageVersionOK: function(metaGlobal) {
+      var payloadObj;
       if (typeof metaGlobal !== 'object' ||
           typeof metaGlobal.data !== 'object' ||
           typeof metaGlobal.data.payload !== 'string') {
@@ -100,7 +110,7 @@ var SyncEngine = (function() {
       } catch(e) {
         return false;
       }
-      return (payloadObj.storageVersion === 5); 
+      return (payloadObj.storageVersion === 5);
     },
 
     _initFxSyncWebCrypto: function(cryptoKeys) {
@@ -109,7 +119,7 @@ var SyncEngine = (function() {
     },
 
     connect: function() {
-      return this._collections.meta.sync().then(() => {
+      return this._syncCollection('meta').then(() => {
         // Alternative code to work around https://github.com/mozilla-services/syncto/issues/6
         //
         // //this._getItem('meta', 'global').then(metaGlobal => {
@@ -119,8 +129,7 @@ var SyncEngine = (function() {
         if (!this._storageVersionOK(metaGlobal)) {
           return Promise.reject('Incompatible storage version or storage version not recognized.');
         }
-
-        return this._collections.crypto.sync();
+        return this._syncCollection('crypto');
       }).then(() => {
         // Alternative code to work around https://github.com/mozilla-services/syncto/issues/6
         //
