@@ -11,13 +11,14 @@ var SyncEngine = (function() {
 
   WebCryptoTransformer.prototype.encode = function(record) {
     return this.fswc.encrypt(record.payload, this.collectionName).then(payloadEnc => {
-      record.payload = payloadEnc;
+      record.payload = JSON.stringify(payloadEnc);
       return record;
     });
   };
 
   WebCryptoTransformer.prototype.decode = function(record) {
-    return this.fswc.decrypt(record.payload, this.collectionName).then(payloadDec => {
+    // Allowing JSON.parse errors to bubble up to the errors list in the syncResults:
+    return this.fswc.decrypt(JSON.parse(record.payload), this.collectionName).then(payloadDec => {
       record.payload = payloadDec;
       return record;
     });
@@ -132,6 +133,7 @@ var SyncEngine = (function() {
         return this._syncCollection('crypto');
       }, (err) => {
         console.log('metaGlobal sync error', err);
+        return Promise.reject('Could not fetch meta/global record');
       }).then(() => {
         // Alternative code to work around https://github.com/mozilla-services/syncto/issues/6
         //
