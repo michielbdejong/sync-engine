@@ -130,6 +130,8 @@ var SyncEngine = (function() {
           return Promise.reject('Incompatible storage version or storage version not recognized.');
         }
         return this._syncCollection('crypto');
+      }, (err) => {
+        console.log('metaGlobal sync error', err);
       }).then(() => {
         // Alternative code to work around https://github.com/mozilla-services/syncto/issues/6
         //

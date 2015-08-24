@@ -4,6 +4,10 @@
 
 indexedDB.deleteDatabase('syncto/history');
 
+function cloneObject(obj) {
+  return JSON.parse(JSON.stringify(obj));
+}
+
 describe('test server on localhost:8000', function() {
   it('is running', function(done) {
     var xhr = new XMLHttpRequest();
@@ -35,7 +39,14 @@ describe('SyncEngine', function() {
       chai.expect(se.connect()).to.eventually.equal(undefined).
              and.notify(done);
     });
-    it('rejects its promise if syncto server not responding');
+    it('rejects its promise if syncto server not responding');//, function(done) {
+   //   this.timeout(10000);
+   //   var credentials = cloneObject(window.fxSyncDataExample.testServerCredentials);
+   //   credentials.URL = 'http://example.com:24012/v1/';
+   //   var se = new SyncEngine(credentials);
+   //   chai.expect(se.connect()).to.be.rejectedWith(undefined).
+   //          and.notify(done);
+   // });
     it('rejects its promise if BrowserID assertion is wrong');
     it('rejects its promise if X-Client-State is wrong');
     it('rejects its promise if kB is wrong');
