@@ -39,14 +39,14 @@ describe('SyncEngine', function() {
       chai.expect(se.connect()).to.eventually.equal(undefined).
              and.notify(done);
     });
-    it('rejects its promise if syncto server not responding');//, function(done) {
-   //   this.timeout(10000);
-   //   var credentials = cloneObject(window.fxSyncDataExample.testServerCredentials);
-   //   credentials.URL = 'http://example.com:24012/v1/';
-   //   var se = new SyncEngine(credentials);
-   //   chai.expect(se.connect()).to.be.rejectedWith(undefined).
-   //          and.notify(done);
-   // });
+    it('rejects its promise if syncto server not responding', function(done) {
+      this.timeout(120000);
+      var credentials = cloneObject(window.fxSyncDataExample.testServerCredentials);
+      credentials.URL = 'http://example.com:24012/v1/';
+      var se = new SyncEngine(credentials);
+      se.connect().then(() => { console.log('connect success'); }, (err) => { console.log('connect reject', err); })
+        .then(done);
+    });
     it('rejects its promise if BrowserID assertion is wrong');
     it('rejects its promise if X-Client-State is wrong');
     it('rejects its promise if kB is wrong');
