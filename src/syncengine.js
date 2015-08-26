@@ -1,5 +1,4 @@
 var SyncEngine = (function() {
-
   function WebCryptoTransformer(setCollectionName, setFswc) {
     if (!setFswc.bulkKeyBundle) {
       throw new Error('Attempt to register Transformer with no bulk key bundle!');
@@ -90,13 +89,27 @@ var SyncEngine = (function() {
     _syncCollection: function(collectionName) {
       // Let synchronization strategy default to 'manual', see
       // http://kintojs.readthedocs.org/en/latest/api/#fetching-and-publishing-changes
-      return this._collections[collectionName].sync().then(syncResults => {
-        if (syncResults.ok) {
-          return Promise.resolve(syncResults);
-        } else {
-          return Promise.reject(syncResults);
-        }
-      });
+      return this._collections[collectionName].sync()
+        .then(syncResults => {
+          if (syncResults.ok) {
+            return syncResults;
+          } else {
+            return Promise.reject(syncResults);
+          }
+        })
+        .catch(err => {
+          if (err instanceof TypeError) {
+            throw new SyncEngine.UnrecoverableError();
+          } else if (err instanceof Error && typeof err.data === 'number') {
+            if (err.data === 401) {
+              throw new SyncEngine.AuthError();
+            } else {
+              throw new SyncEngine.TryLaterError();
+            }
+          } else {
+            throw err;
+          }
+        });
     },
 
     _storageVersionOK: function(metaGlobal) {
@@ -116,7 +129,13 @@ var SyncEngine = (function() {
 
     _initFxSyncWebCrypto: function(cryptoKeys) {
       this._fswc = new FxSyncWebCrypto();
-      return this._fswc.setKeys(this._kB, cryptoKeys);
+      return this._fswc.setKeys(this._kB, cryptoKeys).then(() => {}, (err) => {
+        if (err === 'SyncKeys hmac could not be verified with current main key') {
+          throw new SyncEngine.UnrecoverableError();
+        } else {
+          throw err;
+        }
+      });
     },
 
     connect: function() {
@@ -131,9 +150,6 @@ var SyncEngine = (function() {
           return Promise.reject('Incompatible storage version or storage version not recognized.');
         }
         return this._syncCollection('crypto');
-      }, (err) => {
-        console.log('metaGlobal sync error', err);
-        return Promise.reject('Could not fetch meta/global record');
       }).then(() => {
         // Alternative code to work around https://github.com/mozilla-services/syncto/issues/6
         //
@@ -152,6 +168,8 @@ var SyncEngine = (function() {
         //Cannot do this from the constructor because we need cryptoKeys first,
         //and it's not nice to return a promise from a constructor:
         return this._initFxSyncWebCrypto(cryptoKeys);
+      }).then(() => {}, (err) => {
+        throw err;
       });
     },
 
@@ -161,16 +179,34 @@ var SyncEngine = (function() {
       this._adapters[collectionName] = adapter;
     },
 
+    _updateCollection: function(collectionName) {
+      return this._collections[collectionName].sync().then(syncResults => {
+        if (syncResults.ok) {
+          if (typeof this._adapters[collectionName] !== 'undefined') {
+            return this._adapters[collectionName].update(
+              this._collections[collectionName]);
+          } else {
+            return syncResults;
+          }
+        } else {
+          for (var i=0; i<syncResults.errors.length; i++) {
+            if (syncResults.errors[i] === 'payload.ciphertext is not a Base64 string') {
+              throw new SyncEngine.UnrecoverableError();
+            }
+          }
+        }
+      });
+    },
+
     syncNow: function() {
       var promises = [];
       //TODO: decide if we really want to include 'global' and 'crypto' in this:
       for (var collectionName in this._collections) {
-        promises.push(this._collections[collectionName].sync());
+        promises.push(this._updateCollection(collectionName));
       }
       return Promise.all(promises).then((results) => {
-        for(collectionName in this._adapters) {
-          this._adapters[collectionName].update(this._collections[collectionName]);
-        }
+      }, (err) => {
+        throw err;
       });
       //TODO:
       //push changes after adapter.update finishes
@@ -178,6 +214,15 @@ var SyncEngine = (function() {
       //push conflict resolutions
     }
   };
+
+  SyncEngine.UnrecoverableError = function() {};
+  SyncEngine.UnrecoverableError.prototype = Error;
+
+  SyncEngine.TryLaterError = function() {};
+  SyncEngine.TryLaterError.prototype = Error;
+
+  SyncEngine.AuthError = function() {};
+  SyncEngine.AuthError.prototype = Error;
 
   return SyncEngine;
 })();

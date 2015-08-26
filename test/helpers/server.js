@@ -13,6 +13,7 @@ http.createServer(function(req, res) {
   var pathName = url.parse(req.url).pathname;
 
   if (req.method === 'GET') {
+    console.log('status request:', req.headers['x-client-state']);
     if (pathName === '/running') {
       contentType = 'text/plain';
       response = 'yes';
@@ -27,9 +28,13 @@ http.createServer(function(req, res) {
         commit: '1be8cf6',
         hello: 'syncto'
       });
+    } else if (req.headers['x-client-state'].substr(0, 'respond '.length) === 'respond ') {
+       response = req.headers['x-client-state'].split(' ')[1];
+       status = parseInt(response);
+       contentType = 'text/plain';
     } else if (req.headers.authorization !== 'BrowserID test-assertion-mock') {
       response = 'Please add a request header: Authorization: "BrowserID test-assertion-mock"';
-    } else if (req.headers.authorization !== 'BrowserID test-assertion-mock') {
+    } else if (req.headers['x-client-state'] !== 'test-xClientState-mock') {
       response = 'Please add a request header: X-Client-State: "test-xClientState-mock"';
     } else if (pathName === '/v1/buckets/syncto/collections/meta/records') {
       response = JSON.stringify({
@@ -47,6 +52,12 @@ http.createServer(function(req, res) {
       response = JSON.stringify({
         data: [
           global.fxSyncDataExample.historyEntryResponse
+        ]
+      });
+    } else if (pathName === '/v1/buckets/syncto/collections/schmistory/records') {
+      response = JSON.stringify({
+        data: [
+          global.fxSyncDataExample.schmistoryEntryResponse
         ]
       });
     }

@@ -77,8 +77,58 @@ describe('SyncEngine', function() {
         done();
       });
     });
-    it('rejects its promise if any response status not a 200');
-    it('rejects its promise if any response body not JSON');
-    it('rejects its promise if any record not verifiable/decryptable with Bulk Key Bundle');
+    it('rejects its promise if meta/global response status is a 401', function(done) {
+      //this.timeout(10000);
+      var options = {
+        URL: window.fxSyncDataExample.testServerCredentials.URL,
+        assertion: window.fxSyncDataExample.testServerCredentials.assertion,
+        xClientState: 'respond 401',
+        kB: window.fxSyncDataExample.testServerCredentials.kB
+      };
+      var se = new SyncEngine(options);
+      se.connect().then(function() {}, function(err) {
+        chai.expect(err).to.be.instanceOf(SyncEngine.AuthError);
+        done();
+      });
+    });
+    it('rejects its promise if meta/global response is not JSON', function(done) {
+      //this.timeout(10000);
+      var options = {
+        URL: window.fxSyncDataExample.testServerCredentials.URL,
+        assertion: window.fxSyncDataExample.testServerCredentials.assertion,
+        xClientState: 'respond 200',
+        kB: window.fxSyncDataExample.testServerCredentials.kB
+      };
+      var se = new SyncEngine(options);
+      se.connect().then(function() {}, function(err) {
+        chai.expect(err).to.be.instanceOf(SyncEngine.UnrecoverableError);
+        done();
+      });
+    });
+    it('rejects its promise if kB is wrong', function(done) {
+      //this.timeout(10000);
+      var options = {
+        URL: window.fxSyncDataExample.testServerCredentials.URL,
+        assertion: window.fxSyncDataExample.testServerCredentials.assertion,
+        xClientState: window.fxSyncDataExample.testServerCredentials.xClientState,
+        kB: 'deadbeef'
+      };
+      var se = new SyncEngine(options);
+      se.connect().then(function() {}, function(err) {
+        chai.expect(err).to.be.instanceOf(SyncEngine.UnrecoverableError);
+        done();
+      });
+    });
+    it('rejects its promise if any record not verifiable/decryptable with Bulk Key Bundle', function(done) {
+      //this.timeout(10000);
+      var se = new SyncEngine(window.fxSyncDataExample.testServerCredentials);
+      se.connect().then(() => {
+        se.registerAdapter('schmistory', HistoryAdapter);
+        return se.syncNow();
+      }).then(() => {}, err => {
+        chai.expect(err).to.be.instanceOf(SyncEngine.UnrecoverableError);
+        done();
+      });
+    });
   });
 });
